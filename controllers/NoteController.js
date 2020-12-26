@@ -43,8 +43,6 @@ exports.decrypt = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     const { text, encryption, background } = req.body;
-    console.log(req.body);
-    // return res.status(500).json({ message: 'Server Error' });
 
     let encpText = text.trim();
 
@@ -62,7 +60,7 @@ exports.create = async (req, res, next) => {
       background: background.trim(),
     });
     await noteData.save();
-    res.json(noteData);
+    res.json({ note: noteData });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: 'Server Error' });
@@ -70,12 +68,25 @@ exports.create = async (req, res, next) => {
 };
 
 exports.update = async (req, res, next) => {
+  const { text, encryption } = req.body;
+
+  let encpText = text.trim();
+
+  if (encryption === 'emogize') {
+    encpText = EmogizeEncry(encpText);
+  } else if (encryption === 'backwards') {
+    encpText = Backward(encpText);
+  } else if (encryption === 'letterscramble') {
+    encpText = LetterScrambleEncry(encpText);
+  }
+
   try {
-    const noteData = await Note.findById(req.params.noteId).select(
-      'text encryption'
+    await Note.updateOne(
+      { _id: req.params.noteId },
+      { $set: { text: encpText } }
     );
 
-    res.json(noteData);
+    res.json({ text: encpText });
   } catch (err) {
     return res.status(500).json({ message: 'Server Error' });
   }
