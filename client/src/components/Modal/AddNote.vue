@@ -1,9 +1,9 @@
 <template>
   <div class="addTodoContainer">
-    <div class="options">
+    <div class="options" v-if="mode === 'view'">
       <img
         v-if="type !== 'create'"
-        class="eye"
+        class="deleteBtn"
         @click="deleteNote"
         src="/static/icons/delete.svg"
         alt=""
@@ -40,7 +40,7 @@
         <button type="submit" v-if="mode === 'edit'">
           <img src="/static/icons/check.svg" alt="submit" />
         </button>
-        <p v-if="mode === 'view'" @click="mode = 'edit'">
+        <p v-if="mode === 'view'" @click="editHandler">
           <img src="/static/icons/edit.svg" alt="" />
         </p>
       </div>
@@ -88,9 +88,11 @@ export default {
     }
   },
   methods: {
-    toggleVisibility(e) {
-      if (e.target.src.indexOf("visibility_off") > 0) {
-        e.target.src = "/static/icons/visibility.svg";
+    toggleVisibility(type) {
+      const el = document.querySelector(".eye");
+
+      if (el.src.indexOf("visibility_off") > 0 || type == "show") {
+        el.src = "/static/icons/visibility.svg";
 
         if (!this.decryptedNote) {
           this.encryptedNote = this.note;
@@ -100,7 +102,7 @@ export default {
           this.note = this.decryptedNote;
         }
       } else {
-        e.target.src = "/static/icons/visibility_off.svg";
+        el.src = "/static/icons/visibility_off.svg";
 
         this.note = this.encryptedNote;
       }
@@ -135,6 +137,8 @@ export default {
         const res = await fetch("http://localhost:5000/create", requestOptions);
         const data = await res.json();
 
+        bus.$emit("addNote", data.note);
+
         bus.$emit("closeModal");
       } catch (error) {
         console.log(error);
@@ -152,8 +156,10 @@ export default {
           }),
         };
 
-        const res = await fetch("http://localhost:5000/", requestOptions);
+        const res = await fetch(`http://localhost:5000/${this.id}`, requestOptions);
         const data = await res.json();
+
+        bus.$emit("updateNote", { id: this.id, text: data.text });
 
         bus.$emit("closeModal");
       } catch (error) {
@@ -171,6 +177,11 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+
+    editHandler() {
+      this.toggleVisibility("show");
+      this.mode = "edit";
     },
 
     async deleteNote() {
@@ -219,6 +230,7 @@ export default {
   border-left: none;
 }
 
+.deleteBtn,
 .eye {
   padding: 13px;
   display: flex;
