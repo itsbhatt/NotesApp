@@ -88,7 +88,6 @@ export default {
 }
 
 .menuBar {
-  display: flex;
   align-items: center;
   padding: 25px 60px;
   margin-bottom: 15px;
@@ -96,9 +95,6 @@ export default {
   top: 0;
   background: #ffffff;
   z-index: 900;
-}
-
-.menuBar h1 {
   display: none;
 }
 
@@ -143,10 +139,12 @@ export default {
 }
 
 @media (min-width: 500px) {
+  .menuBar {
+    display: flex;
+  }
   .menuBar h1 {
     font-size: 30px;
     font-weight: 500;
-    display: block;
   }
 }
 </style>
