@@ -134,7 +134,7 @@ export default {
           }),
         };
 
-        const res = await fetch("http://localhost:5000/create", requestOptions);
+        const res = await fetch(`${process.env.PROXY}/create`, requestOptions);
         const data = await res.json();
 
         bus.$emit("addNote", data.note);
@@ -156,7 +156,7 @@ export default {
           }),
         };
 
-        const res = await fetch(`http://localhost:5000/${this.id}`, requestOptions);
+        const res = await fetch(`${process.env.PROXY}/${this.id}`, requestOptions);
         const data = await res.json();
 
         bus.$emit("updateNote", { id: this.id, text: data.text });
@@ -169,7 +169,7 @@ export default {
 
     async decryptNote() {
       try {
-        const res = await fetch(`http://localhost:5000/${this.id}/decrypt`);
+        const res = await fetch(`${process.env.PROXY}/${this.id}/decrypt`);
         const data = await res.json();
 
         this.decryptedNote = data.text;
@@ -186,7 +186,7 @@ export default {
 
     async deleteNote() {
       try {
-        await fetch(`http://localhost:5000/${this.id}`, {
+        await fetch(`${process.env.PROXY}/${this.id}`, {
           method: "DELETE",
         });
 
@@ -236,6 +236,8 @@ export default {
   display: flex;
   align-items: center;
   cursor: pointer;
+  width: 44px;
+  height: 44px;
 }
 
 .addTodoContainer > form {

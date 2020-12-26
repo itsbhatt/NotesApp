@@ -29,15 +29,7 @@ export default {
   data: () => ({
     notes: [],
   }),
-  async created() {
-    try {
-      const res = await fetch("http://localhost:5000");
-      const data = await res.json();
-      this.notes = [...data];
-    } catch (error) {
-      console.log(error);
-    }
-
+  created() {
     bus.$on("addNote", (note) => {
       this.notes.unshift(note);
     });
@@ -58,7 +50,15 @@ export default {
       });
     });
   },
-
+  async beforeMount() {
+    try {
+      const res = await fetch(`${process.env.PROXY}`);
+      const data = await res.json();
+      this.notes = [...data];
+    } catch (error) {
+      console.log(error);
+    }
+  },
   methods: {
     addNote() {
       this.encoded = encode(this.count);
