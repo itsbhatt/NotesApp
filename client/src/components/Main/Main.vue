@@ -29,16 +29,7 @@ export default {
   data: () => ({
     notes: [],
   }),
-  created() {
-    bus.$on("deleteNote", (id) => {
-      this.notes.forEach((note, key) => {
-        if (id == note._id) {
-          this.notes.splice(key, 1);
-        }
-      });
-    });
-  },
-  async beforeMount() {
+  async created() {
     try {
       const res = await fetch("http://localhost:5000");
       const data = await res.json();
@@ -46,7 +37,28 @@ export default {
     } catch (error) {
       console.log(error);
     }
+
+    bus.$on("addNote", (note) => {
+      this.notes.unshift(note);
+    });
+
+    bus.$on("updateNote", ({ id, text }) => {
+      this.notes.forEach((note, key) => {
+        if (id == note._id) {
+          return (this.notes[key].text = text);
+        }
+      });
+    });
+
+    bus.$on("deleteNote", (id) => {
+      this.notes.forEach((note, key) => {
+        if (id == note._id) {
+          return this.notes.splice(key, 1);
+        }
+      });
+    });
   },
+
   methods: {
     addNote() {
       this.encoded = encode(this.count);
