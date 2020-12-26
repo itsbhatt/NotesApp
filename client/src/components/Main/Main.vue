@@ -18,6 +18,14 @@
         }}</span>
       </div>
     </div>
+
+    <div class="loading" v-if="!loaded">
+      <h3>Loading...</h3>
+    </div>
+
+    <div class="loading" v-if="loaded && notes.length == 0">
+      <h3>Please add a note.</h3>
+    </div>
   </div>
 </template>
 
@@ -28,6 +36,7 @@ export default {
   name: "Main",
   data: () => ({
     notes: [],
+    loaded: false,
   }),
   created() {
     bus.$on("addNote", (note) => {
@@ -55,6 +64,7 @@ export default {
       const res = await fetch(`${process.env.PROXY}`);
       const data = await res.json();
       this.notes = [...data];
+      this.loaded = true;
     } catch (error) {
       console.log(error);
     }
@@ -119,6 +129,17 @@ export default {
   bottom: 5px;
   right: 15px;
   font-size: 13px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.loading h3 {
+  font-size: 23px;
 }
 
 @media (min-width: 500px) {
